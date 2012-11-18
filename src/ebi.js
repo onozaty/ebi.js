@@ -1,4 +1,34 @@
-var ElementBuilder = function(target, properties) {
+var Ebi = {};
+
+Ebi.createBuilder = function(tags) {
+
+  var builder = function(target, properties) {
+    return new Ebi.Element(target, properties);
+  }
+
+  if (tags) {
+    for (var i = 0, length = tags.length; i < length; i++) {
+      builder[tags[i]] = Ebi.createTagFunction(tags[i]);
+    }
+  }
+
+  /* Firefox only
+  builder.__noSuchMethod__ = function(id, args) {
+    return new Ebi.Element(id, args[0]);
+  }
+  */
+
+  return builder;
+};
+
+Ebi.createTagFunction = function(tag) {
+  return function(properties) {
+    return new Ebi.Element(tag, properties);
+  }
+};
+
+
+Ebi.Element = function(target, properties) {
 
   if (typeof target == 'string') {
     if (target[0] == '#') {
@@ -17,13 +47,13 @@ var ElementBuilder = function(target, properties) {
   }
 };
 
-ElementBuilder.prototype = {
+Ebi.Element.prototype = {
 
   append: function(value) {
 
     if (typeof value == 'string') {
       value = document.createTextNode(value);
-    } else if (value instanceof ElementBuilder) {
+    } else if (value instanceof Ebi.Element) {
       value = value.target;
     }
 
@@ -33,6 +63,3 @@ ElementBuilder.prototype = {
   }
 };
 
-ElementBuilder.$ = function(value) {
-  return new ElementBuilder(value);
-};
