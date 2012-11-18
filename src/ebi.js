@@ -60,6 +60,13 @@ Ebi.Element.prototype = {
     this.target.appendChild(value);
 
     return this;
+  },
+
+  clear: function() {
+
+    while(this.target.firstChild){
+      this.target.removeChild(this.target.firstChild);
+    }
   }
 };
 
