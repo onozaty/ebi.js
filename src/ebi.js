@@ -23,13 +23,16 @@ var Ebi = (function() {
     return builder;
   };
 
+  // default builder
+  _._ = _.createBuilder(),
+
   _.createTagFunction = function(tag) {
     return function(properties) {
       return new _.Element(tag, properties);
     }
   };
 
-
+  // Element class
   _.Element = function(target, properties) {
 
     if (typeof target == 'string') {
@@ -43,23 +46,42 @@ var Ebi = (function() {
     }
 
     if (properties) {
-      for (var property in properties) {
-        this.target[property] = properties[property];
-      }
+      this.setProperties(properties);
     }
   };
 
   _.Element.prototype = {
 
+    // append short name
+    _: function(value) {
+      return this.append(value);
+    },
+
     append: function(value) {
 
       if (typeof value == 'string') {
-        value = document.createTextNode(value);
-      } else if (value instanceof _.Element) {
-        value = value.target;
-      }
 
-      this.target.appendChild(value);
+        this.target.appendChild(
+                      document.createTextNode(value));
+
+      } else if (value instanceof _.Element) {
+
+        this.target.appendChild(value.target);
+
+      } else if (value instanceof Node) {
+
+        this.target.appendChild(value);
+
+      } else if (value instanceof Array) {
+
+        for (var i = 0, length = value.length; i < length; i++) {
+          this.append(value[i]);
+        }
+
+      } else {
+
+        this.setProperties(value);
+      }
 
       return this;
     },
@@ -71,6 +93,13 @@ var Ebi = (function() {
       }
 
       return this;
+    },
+
+    setProperties: function(properties) {
+
+      for (var property in properties) {
+        this.target[property] = properties[property];
+      }
     }
   };
 
