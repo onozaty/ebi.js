@@ -67,6 +67,8 @@ Ebi.Element.prototype = {
     while(this.target.firstChild){
       this.target.removeChild(this.target.firstChild);
     }
+
+    return this;
   }
 };
 
