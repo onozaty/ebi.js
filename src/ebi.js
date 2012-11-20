@@ -14,31 +14,35 @@ var Ebi = (function() {
 
     initialize: function(target, properties) {
 
-      if (!target) return;
+      if (!target) return; // in extend Element
 
-      if (typeof target == 'string') {
-        if (target[0] == '#') {
+      if (typeof target === 'string') {
+        if (target[0] === '#') {
+          // element id
           this.target = document.getElementById(target.substr(1));
         } else {
+          // tag name
           this.target = document.createElement(target);
         }
       } else {
+        // element object
         this.target = target
       }
 
       if (properties) {
-        this.setProperties(properties);
+        // apply property
+        this.property(properties);
       }
     },
 
-    // append short name
+    // append method short name
     _: function(value) {
       return this.append(value);
     },
 
     append: function(value) {
 
-      if (typeof value == 'string') {
+      if (typeof value === 'string') {
 
         this.target.appendChild(
                       document.createTextNode(value));
@@ -48,10 +52,6 @@ var Ebi = (function() {
         this.target.appendChild(value.target);
         value.parent = this;
 
-      } else if (value instanceof Node) {
-
-        this.target.appendChild(value);
-
       } else if (value instanceof Array) {
 
         for (var i = 0, length = value.length; i < length; i++) {
@@ -60,7 +60,8 @@ var Ebi = (function() {
 
       } else {
 
-        this.setProperties(value);
+        // element
+        this.target.appendChild(value);
       }
 
       return this;
@@ -68,18 +69,47 @@ var Ebi = (function() {
 
     clear: function() {
 
-      while(this.target.firstChild){
+      while (this.target.firstChild) {
         this.target.removeChild(this.target.firstChild);
       }
 
       return this;
     },
 
-    setProperties: function(properties) {
+    property: function(value1, value2) {
 
-      for (var property in properties) {
-        this.target[property] = properties[property];
+      if (value2 != undefined) {
+
+        // key value
+        this.target[value1] = value2;
+
+      } else {
+
+        // properties object
+        for (var property in value1) {
+          this.target[property] = value1[property];
+        }
       }
+
+      return this;
+    },
+
+    style: function(value1, value2) {
+
+      if (value2 != undefined) {
+
+        // key value
+        this.target.style[value1] = value2;
+
+      } else {
+
+        // properties object
+        for (var property in value1) {
+          this.target.style[property] = value1[property];
+        }
+      }
+
+      return this;
     },
 
     start: function(target, properties) {
@@ -103,6 +133,7 @@ var Ebi = (function() {
     var elementClass = _.Element;
 
     if (tags) {
+      // extend Element class, add tag method.
       elementClass = function() {
         this.initialize.apply(this, arguments);
       };
