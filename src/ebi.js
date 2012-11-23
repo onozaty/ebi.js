@@ -1,18 +1,24 @@
+/*
+ebi.js v1.0
+https://github.com/onozaty/ebi.js
+
+Copyright (c) 2012 onozaty (http://www.enjoyxstudy.com)
+Released under an MIT-style license.
+*/
+
 var Ebi = (function() {
 
-  var _ = {};
-
   // Element class
-  _.Element = function() {
+  var Element = function() {
     this.initialize.apply(this, arguments);
   };
 
-  _.Element.prototype = {
+  Element.prototype = {
 
-    clazz: _.Element,
+    clazz: Element,
     parent: null,
 
-    initialize: function(target, properties) {
+    initialize: function(target) {
 
       if (!target) return; // in extend Element
 
@@ -28,16 +34,6 @@ var Ebi = (function() {
         // element object
         this.target = target
       }
-
-      if (properties) {
-        // apply property
-        this.property(properties);
-      }
-    },
-
-    // append method short name
-    _: function(value) {
-      return this.append(value);
     },
 
     append: function(value) {
@@ -47,7 +43,7 @@ var Ebi = (function() {
         this.target.appendChild(
                       document.createTextNode(value));
 
-      } else if (value instanceof _.Element) {
+      } else if (value instanceof Element) {
 
         this.target.appendChild(value.target);
         value.parent = this;
@@ -69,6 +65,7 @@ var Ebi = (function() {
 
     clear: function() {
 
+      // clear all child element.
       while (this.target.firstChild) {
         this.target.removeChild(this.target.firstChild);
       }
@@ -80,7 +77,7 @@ var Ebi = (function() {
 
       if (value2 != undefined) {
 
-        // key value
+        // one property
         this.target[value1] = value2;
 
       } else {
@@ -98,7 +95,7 @@ var Ebi = (function() {
 
       if (value2 != undefined) {
 
-        // key value
+        // one property
         this.target.style[value1] = value2;
 
       } else {
@@ -108,6 +105,13 @@ var Ebi = (function() {
           this.target.style[property] = value1[property];
         }
       }
+
+      return this;
+    },
+
+    event: function(type, func) {
+
+      addEvent(this.target, type, func);
 
       return this;
     },
@@ -127,50 +131,55 @@ var Ebi = (function() {
 
   };
 
-  // Builder
-  _.createBuilder = function(tags) {
-
-    var elementClass = _.Element;
-
-    if (tags) {
-      // extend Element class, add tag method.
-      elementClass = function() {
-        this.initialize.apply(this, arguments);
-      };
-
-      elementClass.prototype = new _.Element;
-      elementClass.prototype.clazz = elementClass;
-
-      for (var i = 0, length = tags.length; i < length; i++) {
-        elementClass.prototype[tags[i]] = _.createTagFunction(tags[i], elementClass);
-      }
-
-      /* Firefox only
-      elementClass.__noSuchMethod__ = function(id, args) {
-        return start(id, args[0]);
-      }
-      */
-    }
-
-    var builder = function(target, properties) {
-      return new elementClass(target, properties);
-    }
-
-    return builder;
-  };
-
-  // default Builder
-  _.defaultBuilder = _.createBuilder();
-
-  _.createElement = function(target, properties) {
-    return _.defaultBuilder(target, properties);
-  };
-
-  _.createTagFunction = function(tag) {
+  // private
+  var createTagFunction = function(tag) {
     return function(properties) {
       return this.start(tag, properties);
     }
   };
 
-  return _;
+  var addEvent = (window.addEventListener ?
+    function(element, type, func) {
+      element.addEventListener(type, func, false);
+    } :
+    function(element, type, func) {
+      element.attachEvent('on' + type, func);
+    });
+
+  // public
+  return {
+    createBuilder: function(tags) {
+
+      var elementClass = Element;
+
+      if (tags) {
+        // extend Element class, add tag method.
+        elementClass = function() {
+          this.initialize.apply(this, arguments);
+        };
+
+        elementClass.prototype = new Element();
+        elementClass.prototype.clazz = elementClass;
+
+        for (var i = 0, length = tags.length; i < length; i++) {
+          elementClass.prototype[tags[i]] = createTagFunction(tags[i], elementClass);
+        }
+
+        /* Firefox only
+        elementClass.__noSuchMethod__ = function(id, args) {
+          return start(id, args[0]);
+        }
+        */
+      }
+
+      return function(target, properties) {
+        return new elementClass(target, properties);
+      };
+    },
+
+    createElement: function(target, tags) {
+      return this.createBuilder(tags)(target);
+    }
+  };
+
 }());
