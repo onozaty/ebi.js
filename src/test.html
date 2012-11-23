@@ -1,0 +1,73 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+ "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="ja" lang="ja">
+  <head>
+    <script type="text/javascript" src="./ebi.js"></script>
+  </head>
+  <body>
+    <div id="test1">
+      test1
+    </div>
+    <div id="test2">
+      test2
+    </div>
+    <div id="test3">
+      test3
+    </div>
+    <script>
+  var builder = Ebi.createBuilder();
+  builder('#test1')
+    .append('text1\n')
+    .append('text2')
+    .start('p')
+      .append('tag p line')
+      .style('height', '100px')
+      .style({
+        color: 'red',
+        fontWeight: 'bold'
+      })
+    .end()
+    .append('text3')
+    .start('input')
+      .property('className', 'class1')
+      .property({
+        type: 'button',
+        value: 'click'
+      })
+      .event(
+        'click',
+        function() { alert(1) }
+      )
+    .end()
+    .style('border', 'solid 1px black');
+
+  builder('#test2').clear();
+
+  Ebi.createElement('#test3', ['p', 'input'])
+    .append('text1\n')
+    .append('text2')
+    .p()
+      .append('tag p line')
+      .style('height', '100px')
+      .style({
+        color: 'red',
+        fontWeight: 'bold'
+      })
+    .end()
+    .append('text3')
+    .input()
+      .property('className', 'class1')
+      .property({
+        type: 'button',
+        value: 'click'
+      })
+      .event(
+        'click',
+        function() { alert(1) }
+      )
+    .end()
+    .style('border', 'solid 1px black');
+
+    </script>
+  </body>
+</html>

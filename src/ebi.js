@@ -118,15 +118,17 @@ var Ebi = (function() {
 
     start: function(target, properties) {
 
-      var startElement = new this.clazz(target, properties);
+      var startElement = new this.clazz(target);
 
-      this.append(startElement);
+      // append DOM tree at "end" method call.
+      startElement.parent = this;
 
       return startElement;
     },
 
     end: function() {
-      return this.parent;
+
+      return this.parent.append(this);
     }
 
   };
