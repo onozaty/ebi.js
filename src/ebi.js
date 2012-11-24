@@ -127,6 +127,10 @@ var Ebi = (function() {
     },
 
     end: function() {
+      if (this.parent.target == null) {
+        // parent is empty element
+        return null;
+      }
 
       return this.parent.append(this);
     }
@@ -174,8 +178,14 @@ var Ebi = (function() {
         */
       }
 
+      var emptyElement = new elementClass();
+
       return function(target, properties) {
-        return new elementClass(target, properties);
+        if (target) {
+          return new elementClass(target, properties);
+        } else {
+          return emptyElement;
+        }
       };
     },
 
