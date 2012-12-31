@@ -139,8 +139,8 @@ var Ebi = (function() {
 
   // private
   var createTagFunction = function(tag) {
-    return function(properties) {
-      return this.start(tag, properties);
+    return function() {
+      return this.start(tag);
     }
   };
 
@@ -168,7 +168,7 @@ var Ebi = (function() {
         elementClass.prototype.clazz = elementClass;
 
         for (var i = 0, length = tags.length; i < length; i++) {
-          elementClass.prototype[tags[i]] = createTagFunction(tags[i], elementClass);
+          elementClass.prototype[tags[i]] = createTagFunction(tags[i]);
         }
 
         /* Firefox only
@@ -180,9 +180,9 @@ var Ebi = (function() {
 
       var emptyElement = new elementClass();
 
-      return function(target, properties) {
+      return function(target) {
         if (target) {
-          return new elementClass(target, properties);
+          return new elementClass(target);
         } else {
           return emptyElement;
         }
