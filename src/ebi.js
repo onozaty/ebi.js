@@ -116,7 +116,7 @@ var Ebi = (function() {
       return this;
     },
 
-    start: function(target, properties) {
+    start: function(target) {
 
       var startElement = new this.clazz(target);
 
